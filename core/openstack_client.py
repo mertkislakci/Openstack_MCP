@@ -136,6 +136,7 @@ class OpenStackConnectionPool:
             osk.connect,
             auth=auth,
             region_name=cfg.os_region_name,
+            verify=False,
         )
         return conn
 
