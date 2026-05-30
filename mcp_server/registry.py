@@ -28,6 +28,7 @@ TOOL_MANIFEST: dict[str, str] = {
     # ── Compute (Nova) ───────────────────────────────────────────────────────
     "get_instances":         "mcp_server.tools.compute.get_instances:GetInstances",
     "get_instance_detail":   "mcp_server.tools.compute.get_instance_detail:GetInstanceDetail",
+    "get_hypervisors":     "mcp_server.tools.compute.get_hypervisors:GetHypervisors",
     "set_instance_delete":   "mcp_server.tools.compute.set_instance_delete:SetInstanceDelete",
     "set_instance_action":   "mcp_server.tools.compute.set_instance_action:SetInstanceAction",
 }
