@@ -201,16 +201,47 @@ async def run_streamable_http() -> None:
             request._send,  # type: ignore[attr-defined]
         )
 
+    # ── Warm-up (arka planda) ────────────────────────────────────────────────
+    @app.on_event("startup")
+    async def _start_warmup() -> None:
+        from mcp_server.warmup import warm_cache
+        asyncio.create_task(warm_cache(delay=2.0))
+
     # ── Health ────────────────────────────────────────────────────────────────
     @app.get("/health")
     async def health() -> JSONResponse:
         registry = get_registry()
+        from core.circuit_breaker import all_breaker_statuses
         return JSONResponse({
             "status": "ok",
             "transport": "streamable-http",
             "tools_loaded": registry.loaded_count,
             "tools_registered": len(registry.names),
             "auth_enabled": bool(cfg.mcp_auth_token),
+            "circuit_breakers": all_breaker_statuses(),
+        })
+
+    @app.get("/metrics")
+    async def metrics_endpoint() -> Any:
+        from core.metrics import metrics_response, update_breaker_gauges
+        from fastapi.responses import PlainTextResponse
+        update_breaker_gauges()
+        body, ctype = metrics_response()
+        return PlainTextResponse(body, media_type=ctype)
+
+    @app.get("/status/cache")
+    async def cache_status() -> JSONResponse:
+        from core.cache import get_cache
+        c = get_cache()
+        return JSONResponse({
+            "size": len(c),
+            "max_size": c._max_size,
+            "hits": c.metrics.hits,
+            "misses": c.metrics.misses,
+            "stale_hits": c.metrics.stale_hits,
+            "evictions": c.metrics.evictions,
+            "hit_rate": round(c.metrics.hit_rate, 3),
+            "stampedes_blocked": c.metrics.stampedes_blocked,
         })
 
     # ── Feedback endpoints ────────────────────────────────────────────────────

@@ -59,3 +59,11 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+# Opsiyonel: Prometheus metrikleri için
+[project.optional-dependencies.metrics]
+dependencies = ["prometheus-client>=0.20.0"]
+
+# Opsiyonel: Redis backend için
+[project.optional-dependencies.redis]
+dependencies = ["redis[asyncio]>=5.0.0", "aioredis>=2.0.0"]
