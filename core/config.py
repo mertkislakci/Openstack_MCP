@@ -77,6 +77,8 @@ class Settings(BaseSettings):
             "project_name": self.os_project_name,
             "user_domain_name": self.os_user_domain_name,
             "project_domain_name": self.os_project_domain_name,
+            "verify": False,
+            "insecure":True,
         }
 
 
